@@ -12,6 +12,9 @@
 
 # testing
 /coverage
+venv/
+__pycache__/
+
 
 # next.js
 /.next/
@@ -39,3 +42,10 @@ yarn-error.log*
 # typescript
 *.tsbuildinfo
 next-env.d.ts
+
+# generated content
+public/videos
+public/temp
+
+# vscode
+.vscode
