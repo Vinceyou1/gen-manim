@@ -129,6 +129,11 @@ const ChatContent = () => {
       return;
     }
 
+    if (status === "submitted" || status === "streaming") {
+      toast.error("Please wait for the current message to finish");
+      return;
+    }
+
     if (message.files?.length) {
       toast.success("Files attached", {
         description: `${message.files.length} file(s) attached to message`,
