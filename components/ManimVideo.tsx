@@ -12,6 +12,7 @@ import {
   Loader2Icon,
   AlertCircleIcon,
   SparklesIcon,
+  DownloadIcon,
 } from "lucide-react";
 import { useState } from "react";
 import { Shimmer } from "./ai-elements/shimmer";
@@ -89,13 +90,25 @@ export function ManimVideo({ toolInvocation }: ManimVideoProps) {
           </div>
           <div className="flex items-center gap-2">
             {!isGenerating && !isError && videoUrl && (
-              <button
-                onClick={handleImprove}
-                className="flex items-center gap-1 text-xs text-blue-500 hover:text-blue-600 font-medium transition-colors mr-2"
-              >
-                <SparklesIcon className="size-3" />
-                <span>Improve</span>
-              </button>
+              <>
+                <button
+                  onClick={handleImprove}
+                  className="flex items-center gap-1 text-xs text-blue-500 hover:text-blue-600 font-medium transition-colors mr-2"
+                >
+                  <SparklesIcon className="size-3" />
+                  <span>Improve</span>
+                </button>
+                <a
+                  href={videoUrl}
+                  download
+                  className="flex items-center gap-1 text-xs text-muted-foreground hover:text-foreground font-medium transition-colors mr-2"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                >
+                  <DownloadIcon className="size-3" />
+                  <span>Download</span>
+                </a>
+              </>
             )}
             <CollapsibleTrigger asChild>
               <button className="flex items-center gap-1 text-xs text-muted-foreground hover:text-foreground transition-colors">
