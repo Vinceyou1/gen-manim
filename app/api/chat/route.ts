@@ -1,7 +1,5 @@
 import { google, GoogleGenerativeAIProviderOptions } from "@ai-sdk/google";
-import { convertToModelMessages, stepCountIs, streamText, tool } from "ai";
-import { z } from "zod";
-import { renderManimVideo } from "@/lib/manim";
+import { convertToModelMessages, stepCountIs, streamText } from "ai";
 import { generateVideoTool } from "@/lib/tools";
 
 export const maxDuration = 300; // Allow longer timeout for rendering
@@ -10,7 +8,7 @@ export async function POST(req: Request) {
   try {
     const { messages, model } = await req.json();
     const modelMessages = convertToModelMessages(messages);
-    let languageModel = google(model.id);
+    const languageModel = google(model.id);
 
     const result = streamText({
       model: languageModel,
@@ -25,8 +23,14 @@ export async function POST(req: Request) {
       system: `You are an expert educational content creator.
       
       Your goal is to create a mini-lecture based on the user's request.
+
+      If the user provides a video attachment or asks to improve a previous video:
+      - This is "Improvement Mode".
+      - Pay special attention to visual misalignment, timing issues, or content errors in the provided video.
+      - Your goal is to fix these specific issues while maintaining the overall educational value.
+      - Explicitly state what you are fixing before generating the new code.
       
-      Process:
+      Otherwise, if the user asks you to explain something, use this process:
       1. Plan the content (script and visualization). Use your reasoning capabilities to create a detailed plan.
       2. Call the \`generateVideo\` tool to create the visualization WITH voiceover.
          - You MUST use the 'GenScene' class name.

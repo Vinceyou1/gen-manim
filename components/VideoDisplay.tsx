@@ -10,7 +10,6 @@ interface VideoDisplayProps {
 export default function VideoDisplay({ videoUrl }: VideoDisplayProps) {
   const videoRef = useRef<HTMLVideoElement>(null);
   const [isPlaying, setIsPlaying] = useState(false);
-  const [currentTime, setCurrentTime] = useState(0);
   const [duration, setDuration] = useState(0);
 
   useEffect(() => {
@@ -88,7 +87,9 @@ export default function VideoDisplay({ videoUrl }: VideoDisplayProps) {
       <div className="absolute bottom-0 left-0 right-0 h-1 bg-gray-800">
         <div
           className="h-full bg-blue-500 transition-all duration-100"
-          style={{ width: `${(currentTime / duration) * 100}%` }}
+          style={{
+            width: `${(videoRef.current?.currentTime ?? 0 / duration) * 100}%`,
+          }}
         />
       </div>
     </div>

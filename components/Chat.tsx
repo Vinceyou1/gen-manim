@@ -1,16 +1,10 @@
 "use client";
 
-import { UIMessage, ToolUIPart, UIToolInvocation } from "ai";
+import { UIToolInvocation } from "ai";
 
 import {
   MessageAction,
   MessageActions,
-  MessageBranch,
-  MessageBranchContent,
-  MessageBranchNext,
-  MessageBranchPage,
-  MessageBranchPrevious,
-  MessageBranchSelector,
 } from "@/components/ai-elements/message";
 import {
   Conversation,
@@ -34,6 +28,8 @@ import {
   PromptInputSubmit,
   PromptInputTextarea,
   PromptInputTools,
+  PromptInputProvider,
+  usePromptInputController,
 } from "@/components/ai-elements/prompt-input";
 import {
   ModelSelector,
@@ -54,25 +50,18 @@ import {
   ReasoningTrigger,
 } from "@/components/ai-elements/reasoning";
 import { MessageResponse } from "@/components/ai-elements/message";
-import {
-  Source,
-  Sources,
-  SourcesContent,
-  SourcesTrigger,
-} from "@/components/ai-elements/sources";
 import { Suggestion, Suggestions } from "@/components/ai-elements/suggestion";
 import { useChat } from "@ai-sdk/react";
 import {
   CheckIcon,
   CopyIcon,
   GlobeIcon,
+  Loader2Icon,
   MicIcon,
   RefreshCcwIcon,
 } from "lucide-react";
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import { toast } from "sonner";
-import { DefaultChatTransport } from "ai";
-import { Loader } from "./ai-elements/loader";
 import { ManimVideo } from "./ManimVideo";
 import { generateVideoTool } from "@/lib/tools";
 
@@ -113,12 +102,16 @@ const suggestions = [
   "Explain the Central Limit Theorem",
 ];
 
-const Chat = () => {
+const ChatContent = () => {
   const [model, setModel] = useState<string>(models[0].id);
   const [modelSelectorOpen, setModelSelectorOpen] = useState(false);
   const [useWebSearch, setUseWebSearch] = useState<boolean>(false);
   const [useMicrophone, setUseMicrophone] = useState<boolean>(false);
-  const [input, setInput] = useState<string>("");
+
+  // Use controller for input state
+  const { textInput } = usePromptInputController();
+  const input = textInput.value;
+  const setInput = textInput.setInput;
 
   const selectedModelData = models.find((m) => m.id === model);
 
@@ -145,6 +138,7 @@ const Chat = () => {
     sendMessage(
       {
         text: message.text,
+        files: message.files,
       },
       {
         body: {
@@ -152,7 +146,7 @@ const Chat = () => {
         },
       }
     );
-    setInput("");
+    // Input clearing is handled by PromptInput when using provider
   };
 
   const handleSuggestionClick = (suggestion: string) => {
@@ -224,7 +218,9 @@ const Chat = () => {
               })}
             </div>
           ))}
-          {status === "submitted" && <Loader className="overflow-hidden" />}
+          {status === "submitted" && (
+            <Loader2Icon className="size-6 animate-spin ml-auto mr-auto" />
+          )}
         </ConversationContent>
         <ConversationScrollButton />
       </Conversation>
@@ -337,6 +333,14 @@ const Chat = () => {
         </div>
       </div>
     </div>
+  );
+};
+
+const Chat = () => {
+  return (
+    <PromptInputProvider>
+      <ChatContent />
+    </PromptInputProvider>
   );
 };
 

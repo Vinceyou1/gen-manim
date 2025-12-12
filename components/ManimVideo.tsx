@@ -11,12 +11,12 @@ import {
   CodeIcon,
   Loader2Icon,
   AlertCircleIcon,
+  SparklesIcon,
 } from "lucide-react";
 import { useState } from "react";
 import { Shimmer } from "./ai-elements/shimmer";
-import { UIToolInvocation, Tool } from "ai";
 import VideoDisplay from "./VideoDisplay";
-import { generateVideoTool } from "@/lib/tools";
+import { usePromptInputController } from "./ai-elements/prompt-input";
 
 interface ManimVideoProps {
   toolInvocation: {
@@ -35,6 +35,7 @@ interface ManimVideoProps {
 export function ManimVideo({ toolInvocation }: ManimVideoProps) {
   const { state, args, output } = toolInvocation;
   const [isOpen, setIsOpen] = useState(false);
+  const { textInput, attachments } = usePromptInputController();
 
   // @ts-ignore
   const code = args?.code || (toolInvocation as any).input?.code || "";
@@ -46,6 +47,23 @@ export function ManimVideo({ toolInvocation }: ManimVideoProps) {
   const errorText =
     toolInvocation.errorText || "An error occurred during generation";
   const videoUrl = output?.videoUrl;
+
+  const handleImprove = async () => {
+    if (!videoUrl) return;
+
+    try {
+      const response = await fetch(videoUrl);
+      const blob = await response.blob();
+      const filename = videoUrl.split("/").pop() || "video.mp4";
+      const file = new File([blob], filename, { type: "video/mp4" });
+
+      attachments.add([file]);
+      textInput.setInput("Improve this video: ");
+      // focus input if possible?
+    } catch (error) {
+      console.error("Failed to load video for improvement:", error);
+    }
+  };
 
   return (
     <div className="w-full my-4 border rounded-lg overflow-hidden bg-card text-card-foreground shadow-sm">
@@ -69,17 +87,28 @@ export function ManimVideo({ toolInvocation }: ManimVideoProps) {
               </>
             )}
           </div>
-          <CollapsibleTrigger asChild>
-            <button className="flex items-center gap-1 text-xs text-muted-foreground hover:text-foreground transition-colors">
-              <span>{isOpen ? "Hide Code" : "Show Code"}</span>
-              <ChevronDownIcon
-                className={cn(
-                  "size-4 transition-transform",
-                  isOpen ? "rotate-180" : "rotate-0"
-                )}
-              />
-            </button>
-          </CollapsibleTrigger>
+          <div className="flex items-center gap-2">
+            {!isGenerating && !isError && videoUrl && (
+              <button
+                onClick={handleImprove}
+                className="flex items-center gap-1 text-xs text-blue-500 hover:text-blue-600 font-medium transition-colors mr-2"
+              >
+                <SparklesIcon className="size-3" />
+                <span>Improve</span>
+              </button>
+            )}
+            <CollapsibleTrigger asChild>
+              <button className="flex items-center gap-1 text-xs text-muted-foreground hover:text-foreground transition-colors">
+                <span>{isOpen ? "Hide Code" : "Show Code"}</span>
+                <ChevronDownIcon
+                  className={cn(
+                    "size-4 transition-transform",
+                    isOpen ? "rotate-180" : "rotate-0"
+                  )}
+                />
+              </button>
+            </CollapsibleTrigger>
+          </div>
         </div>
 
         <CollapsibleContent>
@@ -117,7 +146,9 @@ export function ManimVideo({ toolInvocation }: ManimVideoProps) {
           </div>
         ) : videoUrl ? (
           // TODO: Add audioUrl
-          <VideoDisplay videoUrl={videoUrl} />
+          <div className="mx-16">
+            <VideoDisplay videoUrl={videoUrl} />
+          </div>
         ) : (
           // Fallback if success but no video URL (shouldn't happen ideally)
           <div className="text-sm text-muted-foreground">

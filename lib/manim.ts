@@ -28,7 +28,7 @@ export async function renderManimVideo(
   const command = `export PATH="/Library/TeX/texbin:$PATH" && PYTHONPATH=${pythonPath} ${venvPython} -m manim -ql -o ${sceneName}.mp4 --media_dir ${outputDir} ${filePath} ${sceneName}`;
 
   try {
-    const { stdout, stderr } = await execAsync(command);
+    const { stderr } = await execAsync(command);
 
     if (stderr) console.error("Manim stderr:", stderr);
 
