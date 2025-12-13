@@ -2,6 +2,12 @@
 
 An AI-powered application that generates educational videos using [Manim](https://www.manim.community/) based on natural language prompts. It leverages the [Vercel AI SDK](https://sdk.vercel.ai/docs) and Google's Gemini models to plan, script, and render mathematical animations with voiceovers.
 
+## Demo
+
+<video src="public/example.mp4" controls width="100%"></video>
+
+[Download Example Video](public/example.mp4)
+
 ## Features
 
 - **Natural Language to Video**: Transform text prompts into animated math videos.
