@@ -4,9 +4,7 @@ An AI-powered application that generates educational videos using [Manim](https:
 
 ## Demo
 
-<video src="public/example.mp4" controls width="100%"></video>
-
-[Download Example Video](public/example.mp4)
+<video src="https://github.com/user-attachments/assets/d87c299d-8055-4da5-8495-a3621c716b07" controls width="100%"></video>
 
 ## Features
 
