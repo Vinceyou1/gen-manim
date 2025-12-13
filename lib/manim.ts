@@ -2,14 +2,16 @@ import { exec } from "child_process";
 import fs from "fs/promises";
 import path from "path";
 import { promisify } from "util";
+import { nanoid } from "nanoid";
 
 const execAsync = promisify(exec);
 
 export async function renderManimVideo(
   code: string,
   filename: string = "scene.py",
-  sceneName: string = "GenScene"
+  sceneName: string = "ManimScene_" + nanoid()
 ) {
+  console.log("sceneName:", sceneName);
   const tempDir = path.join(process.cwd(), "public", "temp");
   await fs.mkdir(tempDir, { recursive: true });
 
